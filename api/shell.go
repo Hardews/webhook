@@ -51,9 +51,9 @@ func shellBuild(ctx *gin.Context) {
 		sn := os.Getenv(shellName)
 
 		// git pull
-		cmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("cd %s && git pull", path))
+		cmd := exec.Command("", "", fmt.Sprintf("cd %s && git pull", path))
 		if output, err = cmd.Output(); err != nil {
-			log.Println("git pull error, err:", err)
+			log.Printf("git pull error, err: %s", err)
 			ctx.Abort()
 			return
 		}
