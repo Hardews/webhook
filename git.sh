@@ -1,2 +1,1 @@
-cd /opt/blog && git pull
-./build.sh
+cd /opt/blog && git pull./build.shsh

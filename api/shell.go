@@ -57,14 +57,14 @@ func shellBuild(ctx *gin.Context) {
 		}
 
 		var file *os.File
-		file, err = os.OpenFile("./git.sh", os.O_CREATE|os.O_RDWR, 0777)
+		file, err = os.OpenFile("./git.sh", os.O_CREATE|os.O_RDWR, 0666)
 		if err != nil {
 			log.Println("open git.sh failed,err:", err)
 			return
 		}
 
 		file.Write([]byte(fmt.Sprintf("cd %s && git pull", path)))
-		file.Write([]byte(fmt.Sprintf("./%s", sn)))
+		file.Write([]byte(fmt.Sprintf("\n./%s", sn)))
 		file.Close()
 
 		// git pull && 执行脚本
