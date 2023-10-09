@@ -6,7 +6,7 @@
 
 package main
 
-import "white-album/api"
+import "webhook/api"
 
 func main() {
 	api.Init()
