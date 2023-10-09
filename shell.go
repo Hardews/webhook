@@ -64,7 +64,7 @@ func shellBuild(ctx *gin.Context) {
 		}
 
 		file.Write([]byte(fmt.Sprintf("cd %s && git pull", path)))
-		file.Write([]byte(fmt.Sprintf("./%s", sn)))
+		file.Write([]byte(fmt.Sprintf("\n./%s", sn)))
 		file.Close()
 
 		// git pull && 执行脚本
