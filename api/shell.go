@@ -38,7 +38,7 @@ func shellBuild(ctx *gin.Context) {
 	log.Println("webhook result")
 	fmt.Println(res)
 
-	signature := ctx.GetHeader("X-Hub-Signature")
+	signature := ctx.GetHeader("X-Hub-Signature-256")
 	if signature == "" {
 		log.Println("signature do not have")
 		ctx.Abort()
