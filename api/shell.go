@@ -47,6 +47,9 @@ func shellBuild(ctx *gin.Context) {
 	}
 
 	if util.VerifySignature(signature, resByte) {
+		// 先答复，要不然 github 一直发信息
+		ctx.JSON(200, "build successful!")
+
 		var output []byte
 		path := os.Getenv(projectPath) + res.Repository.Name
 		sn := os.Getenv(shellName)
@@ -104,7 +107,6 @@ func shellBuild(ctx *gin.Context) {
 
 		log.Println("build successful!")
 
-		ctx.JSON(200, "build successful!")
 		return
 	}
 	log.Println("signature error!")
