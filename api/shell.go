@@ -63,7 +63,12 @@ func shellBuild(ctx *gin.Context) {
 			return
 		}
 
-		file.Write([]byte(fmt.Sprintf("cd %s && git pull", path)))
+		file.Write([]byte(fmt.Sprintf("cd %s && git pull\n", path)))
+		// 文件夹可执行
+		file.Write([]byte(fmt.Sprintf("chmod +x ../%s", path)))
+		// 文件可执行
+		file.Write([]byte(fmt.Sprintf("chmod +x %s", sn)))
+		// 执行文件
 		file.Write([]byte(fmt.Sprintf("./%s", sn)))
 		file.Close()
 
@@ -98,6 +103,8 @@ func shellBuild(ctx *gin.Context) {
 		fmt.Println(string(output))
 
 		log.Println("build successful!")
+
+		ctx.JSON(200, "build successful!")
 		return
 	}
 	log.Println("signature error!")
