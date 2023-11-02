@@ -46,70 +46,73 @@ func shellBuild(ctx *gin.Context) {
 		return
 	}
 
-	if util.VerifySignature(signature, resByte) {
-		// 先答复，要不然 github 一直发信息
-		ctx.JSON(200, "build successful!")
+	go func() {
+		if util.VerifySignature(signature, resByte) {
+			// 先答复，要不然 github 一直发信息
 
-		var output []byte
-		path := os.Getenv(projectPath) + res.Repository.Name
-		sn := os.Getenv(shellName)
+			var output []byte
+			path := os.Getenv(projectPath) + res.Repository.Name
+			sn := os.Getenv(shellName)
 
-		_, err = os.Stat("./git.sh")
-		if os.IsExist(err) {
-			os.Remove("./git.sh")
-		}
-
-		var file *os.File
-		file, err = os.OpenFile("./git.sh", os.O_CREATE|os.O_RDWR, 0666)
-		if err != nil {
-			log.Println("open git.sh failed,err:", err)
-			return
-		}
-
-		file.Write([]byte(fmt.Sprintf("cd %s && git pull\n", path)))
-		// 文件夹可执行
-		file.Write([]byte(fmt.Sprintf("chmod +x ../%s\n", path)))
-		// 文件可执行
-		file.Write([]byte(fmt.Sprintf("chmod +x %s\n", sn)))
-		// 执行文件
-		file.Write([]byte(fmt.Sprintf("./%s\n", sn)))
-		file.Close()
-
-		// git pull && 执行脚本
-		cmd := exec.Command("sh", "-c", "./git.sh")
-		stdout, _ := cmd.StdoutPipe()
-		stderr, _ := cmd.StderrPipe()
-
-		err = cmd.Start()
-		if err != nil {
-			log.Println("starting command failed, err:", err)
-			return
-		}
-
-		go asyncLog(stdout)
-		go asyncLog(stderr)
-
-		defer func() {
-			err1 := recover()
-			if err1 != nil {
-				panic(err1)
+			_, err = os.Stat("./git.sh")
+			if os.IsExist(err) {
+				os.Remove("./git.sh")
 			}
-		}()
 
-		err = cmd.Wait()
-		if err != nil {
-			log.Println("waiting for command execution failed, err:", err)
+			var file *os.File
+			file, err = os.OpenFile("./git.sh", os.O_CREATE|os.O_RDWR, 0666)
+			if err != nil {
+				log.Println("open git.sh failed,err:", err)
+				return
+			}
+
+			file.Write([]byte(fmt.Sprintf("cd %s && git pull\n", path)))
+			// 文件夹可执行
+			file.Write([]byte(fmt.Sprintf("chmod +x ../%s\n", path)))
+			// 文件可执行
+			file.Write([]byte(fmt.Sprintf("chmod +x %s\n", sn)))
+			// 执行文件
+			file.Write([]byte(fmt.Sprintf("./%s\n", sn)))
+			file.Close()
+
+			// git pull && 执行脚本
+			cmd := exec.Command("sh", "-c", "./git.sh")
+			stdout, _ := cmd.StdoutPipe()
+			stderr, _ := cmd.StderrPipe()
+
+			err = cmd.Start()
+			if err != nil {
+				log.Println("starting command failed, err:", err)
+				return
+			}
+
+			go asyncLog(stdout)
+			go asyncLog(stderr)
+
+			defer func() {
+				err1 := recover()
+				if err1 != nil {
+					panic(err1)
+				}
+			}()
+
+			err = cmd.Wait()
+			if err != nil {
+				log.Println("waiting for command execution failed, err:", err)
+				return
+			}
+
+			log.Println("successful result")
+			fmt.Println(string(output))
+
+			log.Println("build successful!")
+
 			return
 		}
+		log.Println("signature error!")
+	}()
 
-		log.Println("successful result")
-		fmt.Println(string(output))
-
-		log.Println("build successful!")
-
-		return
-	}
-	log.Println("signature error!")
+	ctx.JSON(200, "build successful!")
 }
 
 func asyncLog(reader io.ReadCloser) error {
