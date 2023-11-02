@@ -57,7 +57,7 @@ func shellBuild(ctx *gin.Context) {
 		}
 
 		var file *os.File
-		file, err = os.OpenFile("./git.sh", os.O_CREATE, os.ModePerm)
+		file, err = os.OpenFile("./git.sh", os.O_CREATE|os.O_RDWR, 0666)
 		if err != nil {
 			log.Println("open git.sh failed,err:", err)
 			return
