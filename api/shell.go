@@ -65,11 +65,11 @@ func shellBuild(ctx *gin.Context) {
 
 		file.Write([]byte(fmt.Sprintf("cd %s && git pull\n", path)))
 		// 文件夹可执行
-		file.Write([]byte(fmt.Sprintf("chmod +x ../%s", path)))
+		file.Write([]byte(fmt.Sprintf("chmod +x ../%s\n", path)))
 		// 文件可执行
-		file.Write([]byte(fmt.Sprintf("chmod +x %s", sn)))
+		file.Write([]byte(fmt.Sprintf("chmod +x %s\n", sn)))
 		// 执行文件
-		file.Write([]byte(fmt.Sprintf("./%s", sn)))
+		file.Write([]byte(fmt.Sprintf("./%s\n", sn)))
 		file.Close()
 
 		// git pull && 执行脚本
