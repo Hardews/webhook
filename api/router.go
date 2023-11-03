@@ -6,12 +6,21 @@
 
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+const redirectUrl = "https://hardews.cn"
 
 func Init() {
 	r := gin.Default()
 
 	r.POST("/shell", shellBuild)
+
+	r.NoRoute(func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusOK, redirectUrl)
+	})
 
 	r.Run(":8090")
 }
