@@ -19,7 +19,7 @@ func Init() {
 	r.POST("/shell", shellBuild)
 
 	r.NoRoute(func(ctx *gin.Context) {
-		ctx.Redirect(http.StatusOK, redirectUrl)
+		ctx.Redirect(http.StatusMovedPermanently, redirectUrl)
 	})
 
 	r.Run(":8090")
